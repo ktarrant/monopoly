@@ -1,7 +1,7 @@
 # board.py - module for board class
 
 import sys
-from xml.etree.ElementTree import ElementTree
+import xml.etree.ElementTree
 import generate
 import quickies
 
@@ -29,23 +29,15 @@ class Property:
 		return head
 
 
-class Board(ElementTree):
-	#def __init__(self, filename=default_board_fn):
-	#	try:
-	#		self.parse(filename)
-	#	except IOError:
-	#		print("Board file '%s'  not found.\
-	#			Generating default..." % filename)
-	#		generate.printDefaultBoard(default_board_fn)
-	#	this.parse(default_board_fn)
-
-	def parse(self, filename, parser=None):
-		super().parse(filename, parser)
-		self.updateProperties()
-
-		
-	def updateProperties(self):
-		root = self.getroot()
+class Board():
+	def parse(self, filename):
+		tree = None
+		try:
+			tree = xml.etree.ElementTree.parse(filename)
+		except FileNotFoundError:
+			generate.printDefaultBoard(default_board_fn)
+			tree = xml.etree.ElementTree.parse(default_board_fn)
+		root = tree.getroot()
 		assert(root.tag=="map")
 		self.boardName = root.attrib.get("name")
 		self.properties = []
@@ -61,13 +53,6 @@ class Board(ElementTree):
 			except AttributeError: pass
 			self.properties.append(np)
 		print("Success!")
-
-	"""def loadProperties(self, filename):
-		tree = ET.parse(filename)
-		root = tree.getroot()
-		assert(root.tag == "map")
-		self.name = root.attrib.get("name")
-		print("Parsing '%s'." % self.name)"""
 
 
 if __name__ == "__main__":
